@@ -1,0 +1,4 @@
+# Сайты под наблюдением: один адрес в строке
+https://barkal-nsk.ru
+https://barkal-agent.relaxdev.ru
+https://voloshin.relaxdev.ru
