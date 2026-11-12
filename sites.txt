@@ -2,4 +2,3 @@
 https://barkal-nsk.ru
 https://barkal-agent.relaxdev.ru
 https://voloshin.relaxdev.ru
-https://alert-test.invalid
