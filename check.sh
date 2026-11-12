@@ -2,6 +2,7 @@
 # Проверяет каждый сайт из sites.txt. Упал (3 неудачи подряд) — открывает issue на владельца,
 # поднялся — закрывает. SSL истекает меньше чем через 14 дней — отдельное предупреждение.
 set -u
+export LC_NUMERIC=C
 owner="${GITHUB_REPOSITORY_OWNER}"
 down_label="сайт упал"
 ssl_label="ssl истекает"
@@ -15,7 +16,9 @@ open_issue() { # $1 заголовок, $2 метка → номер откры�
 
 summary="| Сайт | Статус | Время ответа | SSL до |\n|---|---|---|---|\n"
 
-grep -Ev '^\s*(#|$)' sites.txt | while read -r url; do
+# список читаем через дескриптор 3, чтобы gh/curl внутри цикла не съели его со stdin
+while read -r url <&3; do
+  url="${url%$'\r'}"
   host="${url#https://}"; host="${host%%/*}"
   code=000; time=0
   for try in 1 2 3; do
@@ -58,7 +61,7 @@ grep -Ev '^\s*(#|$)' sites.txt | while read -r url; do
   fi
 
   printf '| %s | %s | %.1f с | %s |\n' "$url" "$status" "$time" "$ssl_day" >> status-rows.tmp
-done
+done 3< <(grep -Ev '^\s*(#|$)' sites.txt)
 
 {
   echo "# Состояние сайтов"
@@ -69,4 +72,5 @@ done
   cat status-rows.tmp
 } > status.md
 rm -f status-rows.tmp
+cat status.md
 cat status.md >> "$GITHUB_STEP_SUMMARY"
